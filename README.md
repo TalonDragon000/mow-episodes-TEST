@@ -6,8 +6,8 @@ Follow along with me if you like. :)
 
 **Building a MOW - PT. 1** 
 __Dan's stack setup:__
-- CLI: Cursor (includes AI Claude 3.5) 
-- Platform: Node.js
+- CLI: [Cursor (includes AI Claude 3.5)](https://www.cursor.com/) 
+- Platform: [Node.js](https://nodejs.org/en)
 - Package: npm
-- Frontend: Vite 
+- Frontend: [Vite](https://vite.dev/) 
 - Framework: [Phaser (HTML5)](https://phaser.io/) 

@@ -1,5 +1,5 @@
-![Static Badge](https://img.shields.io/badge/On_Track-4c1?label=Project%20Status)
- ![GitHub last commit](https://img.shields.io/github/last-commit/TalonDragon000/mow-episodes-TEST)
+![Static Badge](https://img.shields.io/badge/On_Track-4c1?label=Project%20Status) 
+![GitHub last commit](https://img.shields.io/github/last-commit/TalonDragon000/mow-episodes-TEST)
 
 ## Welcome to my Test Repo! 
 This repo is to see if I can follow along and modify Dan Nolan's MOW tutorial for the SHAPE x ALCHEMY Hackathon starting in November. 

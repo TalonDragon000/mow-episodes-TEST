@@ -263,6 +263,21 @@ function update() {
       this.player.anims.play("idleDown", true);
     }
   }
+
+    // Keep player within screen boundaries
+  if (this.player.x < 10) {
+    this.player.x = 10; // Reset to left boundary
+  } else if (this.player.x > 790) {
+    this.player.x = 790; // Reset to right boundary
+  }
+
+  if (this.player.y < 10) {
+    this.player.y = 10; // Reset to top boundary
+  } else if (this.player.y > 590) {
+    this.player.y = 590; // Reset to bottom boundary
+  }
+
+  // Slime direction and speed movement
   this.slimes.children.iterate((slime) => {
     if (Phaser.Math.Between(0, 100) < 2) {
       const direction = Phaser.Math.Between(0, 3);
@@ -286,6 +301,19 @@ function update() {
           slime.play("slimeHopUp", true);
           break;
       }
+    }
+
+     // Keep slime within screen boundaries
+    if (slime.x < 10) {
+      slime.x = 10; // Reset to left boundary
+    } else if (slime.x > 790) {
+      slime.x = 790; // Reset to right boundary
+    }
+
+    if (slime.y < 10) {
+      slime.y = 10; // Reset to top boundary
+    } else if (slime.y > 590) {
+      slime.y = 590; // Reset to bottom boundary
     }
   });
 }

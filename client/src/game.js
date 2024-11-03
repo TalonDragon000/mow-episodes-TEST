@@ -1,4 +1,7 @@
 import Phaser from "phaser";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:3000");
 
 const config = {
   type: Phaser.AUTO,
@@ -32,8 +35,7 @@ function preload() {
 }
 
 function create() {
-  this.player = this.physics.add.sprite(400, 300, "player");
-  this.player.setScale(1.5); // Scale the player sprite by 1.5 times
+  this.players = new Map();
   this.cursors = this.input.keyboard.createCursorKeys();
 
   // Create animations
@@ -199,8 +201,6 @@ function create() {
     repeat: 0,
   });
 
-  this.player.play("idleDown");
-
   this.slimes = this.physics.add.group();
 
   for (let i = 0; i < 10; i++) {
@@ -209,111 +209,60 @@ function create() {
     const slime = this.slimes.create(x, y, "slime");
     slime.play("slimeIdleDown");
   }
+
+  socket.on("gameState", (gameState) => {
+    // Update or create players
+    gameState.players.forEach((playerData) => {
+      let player = this.players.get(playerData.id);
+
+      if (!player) {
+        // Create new player sprite
+        player = this.physics.add.sprite(playerData.x, playerData.y, "player");
+        player.setScale(1.5);
+        this.players.set(playerData.id, player);
+      }
+
+      // Update player position and animation
+      player.x = playerData.x;
+      player.y = playerData.y;
+      if (playerData.animation) {
+        player.anims.play(playerData.animation, true);
+        player.flipX = playerData.flipX;
+      }
+    });
+
+    // Remove disconnected players
+    const currentPlayerIds = gameState.players.map((p) => p.id);
+    Array.from(this.players.keys()).forEach((playerId) => {
+      if (!currentPlayerIds.includes(playerId)) {
+        this.players.get(playerId).destroy();
+        this.players.delete(playerId);
+      }
+    });
+
+    // Update slimes
+    gameState.slimes.forEach((slimeData, index) => {
+      let slime = this.slimes.getChildren()[index];
+      if (!slime) {
+        slime = this.slimes.create(slimeData.x, slimeData.y, "slime");
+      }
+      slime.x = slimeData.x;
+      slime.y = slimeData.y;
+      if (slimeData.animation) {
+        slime.play(slimeData.animation, true);
+        slime.flipX = slimeData.flipX;
+      }
+    });
+  });
 }
 
 function update() {
-  const speed = 160;
-  const prevVelocity = this.player.body.velocity.clone();
+  const inputState = {
+    left: this.cursors.left.isDown,
+    right: this.cursors.right.isDown,
+    up: this.cursors.up.isDown,
+    down: this.cursors.down.isDown,
+  };
 
-  // Stop any previous movement from the last frame
-  this.player.body.setVelocity(0);
-
-  // Horizontal movement
-  if (this.cursors.left.isDown) {
-    this.player.body.setVelocityX(-speed);
-    this.player.anims.play("walkRight", true); // Assuming you have a 'walkLeft' animation
-    this.player.flipX = true; // Flip the sprite to face left
-  } else if (this.cursors.right.isDown) {
-    this.player.body.setVelocityX(speed);
-    this.player.anims.play("walkRight", true);
-    this.player.flipX = false; // Ensure the sprite is facing right
-  }
-
-  // Vertical movement
-  if (this.cursors.up.isDown) {
-    this.player.body.setVelocityY(-speed);
-    this.player.anims.play("walkUp", true);
-  } else if (this.cursors.down.isDown) {
-    this.player.body.setVelocityY(speed);
-    this.player.anims.play("walkDown", true);
-  }
-
-  // Normalize and scale the velocity so that player can't move faster along a diagonal
-  this.player.body.velocity.normalize().scale(speed);
-
-  // If no movement keys are pressed, stop the animation
-  if (
-    this.cursors.left.isUp &&
-    this.cursors.right.isUp &&
-    this.cursors.up.isUp &&
-    this.cursors.down.isUp
-  ) {
-    this.player.anims.stop();
-
-    // Set idle animation based on the last direction
-    if (prevVelocity.x < 0) {
-      this.player.anims.play("idleRight", true);
-      this.player.flipX = true;
-    } else if (prevVelocity.x > 0) {
-      this.player.anims.play("idleRight", true);
-      this.player.flipX = false;
-    } else if (prevVelocity.y < 0) {
-      this.player.anims.play("idleUp", true);
-    } else if (prevVelocity.y > 0) {
-      this.player.anims.play("idleDown", true);
-    }
-  }
-
-    // Keep player within screen boundaries
-  if (this.player.x < 10) {
-    this.player.x = 10; // Reset to left boundary
-  } else if (this.player.x > 790) {
-    this.player.x = 790; // Reset to right boundary
-  }
-
-  if (this.player.y < 10) {
-    this.player.y = 10; // Reset to top boundary
-  } else if (this.player.y > 590) {
-    this.player.y = 590; // Reset to bottom boundary
-  }
-
-  // Slime direction and speed movement
-  this.slimes.children.iterate((slime) => {
-    if (Phaser.Math.Between(0, 100) < 2) {
-      const direction = Phaser.Math.Between(0, 3);
-      const speed = Phaser.Math.Between(50, 150);
-      switch (direction) {
-        case 0:
-          slime.setVelocityX(speed);
-          slime.play("slimeHopRight", true);
-          break;
-        case 1:
-          slime.setVelocityX(-speed);
-          slime.play("slimeHopRight", true);
-          slime.flipX = true;
-          break;
-        case 2:
-          slime.setVelocityY(speed);
-          slime.play("slimeHopDown", true);
-          break;
-        case 3:
-          slime.setVelocityY(-speed);
-          slime.play("slimeHopUp", true);
-          break;
-      }
-    }
-
-     // Keep slime within screen boundaries
-    if (slime.x < 10) {
-      slime.x = 10; // Reset to left boundary
-    } else if (slime.x > 790) {
-      slime.x = 790; // Reset to right boundary
-    }
-
-    if (slime.y < 10) {
-      slime.y = 10; // Reset to top boundary
-    } else if (slime.y > 590) {
-      slime.y = 590; // Reset to bottom boundary
-    }
-  });
+  socket.emit("playerInput", inputState);
 }

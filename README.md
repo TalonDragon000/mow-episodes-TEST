@@ -15,5 +15,6 @@ __Dan's stack setup:__
 - Frontend: [Vite](https://vite.dev/) 
 - Framework: [Phaser (HTML5)](https://phaser.io/) 
 
-**PROJECT UPDATES:**
-Project status reports are located [HERE](https://github.com/users/TalonDragon000/projects/2/views/1?pane=info&statusUpdateId=60337)
+**PROJECT REPORT UPDATES:**
+- Update [11/01/2024](https://github.com/users/TalonDragon000/projects/2/views/1?pane=info&statusUpdateId=60337) - Episode 1 Updates
+- Update [11/03/2024](https://github.com/users/TalonDragon000/projects/2/views/1?pane=info&statusUpdateId=61510) - Episode 2 Updates

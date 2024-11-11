@@ -7,11 +7,24 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     methods: ["GET", "POST"],
+    credentials: true
   },
 });
 
+// Add basic error handling
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
+
+// Add a basic route to check if the server is running
+app.get('/', (req, res) => {
+  res.send('Game server is running');
+});
+
+// Game state
 const gameState = new GameState();
 
 io.on("connection", (socket) => {

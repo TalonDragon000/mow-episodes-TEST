@@ -18,3 +18,7 @@ __Dan's stack setup:__
 **PROJECT REPORTS:**
 - Update [11/01/2024](https://github.com/users/TalonDragon000/projects/2/views/1?pane=info&statusUpdateId=60337) - Episode 1 Updates
 - Update [11/03/2024](https://github.com/users/TalonDragon000/projects/2/views/1?pane=info&statusUpdateId=61510) - Episode 2 Updates
+- Update [11/11/2024](https://github.com/users/TalonDragon000/projects/2?pane=issue&itemId=86706782) - Additions via Claude 3.5
+
+## Screenshot
+![Screenshot](GameScreenshot.png)

@@ -14,9 +14,30 @@ const io = new Server(httpServer, {
 
 const gameState = new GameState();
 
+const GAME_WIDTH = 800;
+const GAME_HEIGHT = 600;
+
 io.on("connection", (socket) => {
-  console.log("Player connected:", socket.id);
-  gameState.addPlayer(socket.id);
+  const startX = Math.random() * GAME_WIDTH;
+  const startY = Math.random() * GAME_HEIGHT;
+
+  socket.on("playerData", (playerData) => {
+    gameState.addPlayer(socket.id, {
+      x: startX,
+      y: startY,
+      name: playerData.name,
+      spriteId: playerData.spriteId,
+    });
+
+    // Emit updated game state to all clients
+    io.emit("gameState", {
+      players: Array.from(gameState.players.entries()).map(([id, player]) => ({
+        id,
+        ...player,
+      })),
+      slimes: gameState.slimes,
+    });
+  });
 
   socket.on("playerInput", (inputState) => {
     gameState.update(socket.id, inputState);
